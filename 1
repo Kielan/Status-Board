@@ -1,0 +1,68 @@
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import Button from './Buttons/Big.tsx'
+import Close from './Icons/Close.tsx'
+
+const TaskModalChecklistAddItemWrapper = styled.div`
+	flex: 1;
+`
+
+interface ITaskModalChecklistAddItemProps {
+  title: string
+}
+
+const TaskModalChecklistAddItem:React.FC<ITaskModalChecklistAddItemProps> = prop => {
+	const [addChecklistItemActive, setAddChecklistItemActive] = useState(false)
+  var wrapperContent;
+
+  const onClickSetAddChecklistItemActive = () => {
+    setAddChecklistItemActive(true)
+  }
+
+  const onClickSetAddChecklistItemClose = () => {
+    setAddChecklistItemActive(false)
+  }
+
+  if(addChecklistItemActive) {
+    wrapperContent = <TaskModalChecklistAddItemForm onClickEditClose={onClickSetAddChecklistItemClose}/>
+  } else {
+    wrapperContent = <Button name={'Add an item'} onClick={onClickSetAddChecklistItemActive()}/>
+  }
+
+	return (
+		<TaskModalChecklistAddItemWrapper>
+			{wrapperContent}
+		</TaskModalChecklistAddItemWrapper>
+	)
+}
+
+const TaskModalChecklistAddItemFormWrapper = styled.div`
+	display: flex;
+	flex: 1;
+`
+
+const TaskModalChecklistAddItemFormFooter = styled.div`
+	display: flex;
+	flex: 1;
+`
+const IconCloseWrapper = styled.div`
+	align-items: center;
+	justify-content: center;
+	display: flex;
+	flex: 1;
+`
+
+const TaskModalChecklistAddItemForm:React.FC<ITaskModalChecklistAddItemFormProps> = props => {
+	return (
+		<TaskModalChecklistAddItemFormWrapper>
+			<TaskModalChecklistAddItemFormFooter>
+				<Button name={'Add'} onClick={() => {}}/>
+				<IconCloseWrapper onClick={() => {}}>
+					<Close/>
+				</IconCloseWrapper>	
+			</TaskModalChecklistAddItemFormFooter>
+		</TaskModalChecklistAddItemFormWrapper>
+	)
+}
+
+export default TaskModalChecklistAddItem
