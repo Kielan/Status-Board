@@ -16,17 +16,17 @@ You can start editing the page by modifying `pages/index.js`. The page auto-upda
 
 ##Development Todo List
 
-[ ] link score to subtasks
-[ ] refactor button
+- [ ] link score to subtasks
+- [ ] refactor button
 		--remove need for button wrappers
 		-- taks props colorPrimary colorSecondary
-[ ] Implement delete
-[ ] Add Jest Tests
-[ ] Add Storybook
-[x] EditableTextarea on title
-[x] Save on EditableTextarea
-[x] Clear input on add SubTask
-[x] add complete bool check input
+- [ ] Implement delete
+- [ ] Add Jest Tests
+- [ ] Add Storybook
+- [x] EditableTextarea on title
+- [x] Save on EditableTextarea
+- [x] Clear input on add SubTask
+- [x] add complete bool check input
 
 ## Learn More
 
