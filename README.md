@@ -15,9 +15,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
 ## Development Todo List
-
-- [ ] link score to subtasks
-- [ ] refactor button
+- [] Add .tsconfig file
+- [ ] Link score to subtasks
+- [ ] Refactor button
 		--remove need for button wrappers
 		-- taks props colorPrimary colorSecondary
 - [ ] Implement delete

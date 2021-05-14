@@ -45,6 +45,7 @@ interface ITaskProps {
 
 const TaskItem: React.FC<ITaskProps> = props => {
   const { taskItem } = props
+	console.log('KDL TASKITEM ', taskItem)
 
   const [modal, setModal] = React.useState<boolean>(false)
   const [drag, setDrag] = React.useState<boolean>(false)
@@ -64,20 +65,6 @@ const TaskItem: React.FC<ITaskProps> = props => {
     )
   )
 
-	const handleComputeScoreLine = (taskItem: ITaskState) => {
-		let scoreLine = 0
-  	if (taskItem.complete == true) {
-    	return 100
-  	} else {
-    	const subTaskListTotal = taskItem.subTaskList.length
-    	const subTaskListComplete = taskItem.subTaskList.filter(item => item.complete == true).length
-    	scoreLine = (subTaskListComplete / subTaskListTotal) * 100
-			return scoreLine
-  	}
-	}
-
-	const scoreLine = handleComputeScoreLine(taskItem) 
-
   return (
     <>
       <Wrapper
@@ -89,7 +76,7 @@ const TaskItem: React.FC<ITaskProps> = props => {
       >
         <TaskItemTitle data={taskItem} />
         <TaskItemInfo data={taskItem} />
-				<TaskScore data={taskItem} scoreLine={scoreLine} />
+				<TaskScore data={taskItem} />
         <Users>{users}</Users>
       </Wrapper>
       <>{modal && <TaskModal {...taskItem} onClose={toggleModal} />}</>

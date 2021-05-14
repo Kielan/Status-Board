@@ -30,7 +30,6 @@ import {
 
 export const fetchTasks = () => async (dispatch: Dispatch): Promise<void> => {
   try {
-		console.log('actions fetchtasks called ', REST_DATA);
     dispatch({ type: TASKS_FETCH, payload: REST_DATA })
   } catch (err) {
     console.error(`[Action: fetchTasks] - ${err}`)
@@ -114,7 +113,6 @@ export const getTasks = createSelector(
 
 export const filteredTasks = (state: any, type: string): ITaskState[] => {
   return state.tasks.filter((task: ITaskState) => {
-		console.log('kdl state.tasks.filter ', task, type);
     return task.type === type
   })
 }
@@ -145,7 +143,6 @@ const tasksCaseUpdateSubtaskAdd = (state, payload): ITaskState => {
       if(!taskItem.subTaskList || !taskItem.subTaskList.length) {
         taskItem.subTaskList = []
       }
-			console.log('test genid(), ', genId());
       const subTaskItem = { ...subTask, id: genId() }
       taskItem.subTaskList.push(subTaskItem)
       //replace taskItem in taskList by index
@@ -198,7 +195,6 @@ const genId = (): string => {
   	true,
   	["sign", "verify"]
 	)
-	console.log('KDL GENERATEKEY ', key);
 	return key
 }
 

@@ -127,6 +127,7 @@ const TaskModal: React.FC<ITaskModalProps> = props => {
 						subTaskComplete={subTaskComplete}
 						subTaskList={subTaskList}
 						taskId={id}
+						taskItem={props}
 					/>
 				</div>
        	<Delete onClick={() => removeTask(id)}>Delete</Delete>
@@ -274,6 +275,7 @@ const TaskModalChecklistColumn = styled.div`
 interface ITaskModalChecklistProps {
   addTaskSubTask: () => void
   taskId: string
+	taskItem: ITaskStatus
   title: string
   subTaskList: ISubTaskProps[]
   subTaskComplete: () => void
@@ -281,7 +283,7 @@ interface ITaskModalChecklistProps {
 }
 
 const TaskModalChecklist:React.FC<ITaskModalChecklistProps> = props => {
-  const { addTaskSubTask, subTaskComplete, subTaskDelete, subTaskList, taskId } = props
+  const { addTaskSubTask, subTaskComplete, subTaskDelete, subTaskList, taskId, taskItem } = props
   var checklistContent;
 
   if(subTaskList && subTaskList.length > 0) {
@@ -303,7 +305,7 @@ const TaskModalChecklist:React.FC<ITaskModalChecklistProps> = props => {
           </SectionHeader>
           <SectionBody>
             <SectionText>
-              <TaskScore data={{line:50}}/>
+              <TaskScore data={taskItem}/>
             </SectionText>
           </SectionBody>
         </TaskModalChecklistColumn>

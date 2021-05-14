@@ -30,7 +30,6 @@ interface IStatusBoardContainerProps {
 }
 
 const StatusBoardContainer: React.FC<IStatusBoardContainerProps> = props => {
-	console.log('kdl props.backlog ', props.backlog)
   const { fetchTasks, tasks } = props
 	
 	React.useEffect(() => {
