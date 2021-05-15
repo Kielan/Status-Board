@@ -2,6 +2,7 @@ export const STATUS_TYPES = {
   all: 'All tasks',
   backlog: 'Backlog',
   progress: 'In Progress',
+	review: 'In Review',
   complete: 'Complete'
 }
 

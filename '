@@ -1,0 +1,104 @@
+import React from 'react'
+import styled from 'styled-components'
+import { colors } from './styles.ts'
+
+const crossSize = 16
+
+const Cross = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 25%;
+  width: ${crossSize}px;
+  height: ${crossSize}px;
+  :before,
+  :after {
+    position: absolute;
+    left: 0;
+    content: '';
+    height: ${crossSize}px;
+    width: 2px;
+    background-color: ${colors.PrimaryColor};
+  }
+  :before {
+    transform: rotate(90deg);
+  }
+  :after {
+    transform: rotate(180deg);
+  }
+`
+//0 0 15px 15px
+const Wrapper = styled.button`
+  height: 35px;
+  border-radius: ${(props: IButtonProps) => (props.borderVariant == ButtonBorderTypes.rounded ? '4px' :
+																						props.size == ButtonBorderTypes.topflat ? '0 0 15px 15px' : '0 0 15px 15px')};
+  outline: none;
+  border: 1px solid ${colors.TertiaryColor};
+  position: relative;
+  cursor: pointer;
+  background-color: ${(props: IButtonProps) => (props.backgroundVariant == ButtonBackgroundTypes.light ? colors.WhiteColor :
+																								props.backgroundVariant == ButtonBackgroundTypes.dark ? colors.PrimaryColor : colors.PrimaryColor)};
+  :hover {
+    background-color: 1px dashed ${colors.SecondaryColor};
+  }
+  :hover ${Cross}:before {
+    background-color: ${colors.TertiaryColor};
+  }
+  :hover ${Cross}:after {
+    background-color: ${colors.TertiaryColor};
+  }
+`
+//const Wrapper = styled.div`
+//  background-color: ${colors.primaryColor};
+// border: 2px solid ${colors.primaryColor};
+//  border-radius: 4px;
+//  display: flex;
+//  justify-content: center;
+//  align-items: center;
+//  :hover {
+//    cursor: pointer;
+//  }
+//`
+const Text = styled.span`
+  font-size: 14px;
+  text-align: center;
+  padding: ${(props: IButtonProps) => (props.size == 'small' ? '3px 10px' :
+                                        props.size == 'big' ? '10px 15px' : '10px 15px')};
+`
+export enum ButtonBackgroundTypes {
+	light,
+	dark,
+	warning
+}
+
+export enum ButtonBorderTypes {
+	topflat,
+	rounded
+}
+//modification outline inverted notext
+interface IButtonProps {
+	backgroundVariant?: ButtonBackgroundTypes
+	borderVariant?: ButtonBorderTypes
+	modification?: string
+	name: string
+  onClick?: () => void
+  size?: string
+}
+
+const Button: React.FC<IButtonProps> = props => {
+  const { modification, name, onClick, size } = props
+
+  return (
+    <Wrapper { ...props } >
+      { modification != 'notext' && <Text {...props}>{name}</Text>}
+			{ modification == 'notext' && <Cross />}
+    </Wrapper>
+  )
+}
+
+Button.defaultProps = {
+	backgroundVariant: ButtonBackgroundTypes.dark,
+	borderVariant: ButtonBorderTypes.rounded
+}
+
+export default React.memo(Button)
+	

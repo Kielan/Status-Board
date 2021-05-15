@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import Loader from './Loader.tsx'
-import Big from './Buttons/Big.tsx'
+import Big from './Button.tsx'
 import TeamCard from './TeamCard.tsx'
 import { ITeamListState } from './types.tsx'
 import IconOval from './Icons/Oval.tsx'

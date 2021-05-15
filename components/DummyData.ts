@@ -12,7 +12,7 @@ const REST_DATA = [
 		subTaskList: [
 			{ complete: true, id: 'genstring1', itemText: 'meet with team and discuss requirements' },
 			{ complete: false, id: 'genstring2', itemText: 'assign initial round of tasks' },
-			{ complete: false, id: 'genstring3', itemText: 'review' },
+			{ complete: false, id: 'genstring3', itemText: 'review task status and reassign status and resolver' },
 		],
     type: "In Progress",
     users: [{

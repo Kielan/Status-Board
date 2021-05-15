@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import Close from './Icons/Close.tsx'
-import Button from './Buttons/Big.tsx'
+import Button from './Button.tsx'
 
 const EditableTextareaWrapper = styled.div`
 	cursor: pointer;

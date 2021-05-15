@@ -40,11 +40,11 @@ const TasksWrapper = styled.div`
   flex-wrap: wrap;
 `
 
-interface IContentTasksProps {
+interface ITaskListProps {
   tasks: ITaskState[]
 }
 
-const Tasks: React.FC<IContentTasksProps> = props => {
+const TaskList: React.FC<ITaskListProps> = props => {
   const { tasks = { id: "100" } } = props
 
   const tasksList = tasks.map((item: ITaskState) => (
@@ -66,4 +66,4 @@ const Tasks: React.FC<IContentTasksProps> = props => {
   )
 }
 
-export default Tasks;
+export default TaskList;

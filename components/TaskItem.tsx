@@ -6,7 +6,7 @@ import AttachIcon from './Icons/Attach.tsx'
 import TasksIcon from './Icons/Tasks.tsx'
 import Avatar from './Avatar.tsx'
 import TaskModal from './TaskModal.tsx'
-import TaskScore from './TaskScore.tsx'
+import Score from './Score.tsx'
 
 const Wrapper = styled.div`
   display: flex;
@@ -64,20 +64,6 @@ const TaskItem: React.FC<ITaskProps> = props => {
     )
   )
 
-	const handleComputeScoreLine = (taskItem: ITaskState) => {
-		let scoreLine = 0
-  	if (taskItem.complete == true) {
-    	return 100
-  	} else {
-    	const subTaskListTotal = taskItem.subTaskList.length
-    	const subTaskListComplete = taskItem.subTaskList.filter(item => item.complete == true).length
-    	scoreLine = (subTaskListComplete / subTaskListTotal) * 100
-			return scoreLine
-  	}
-	}
-
-	const scoreLine = handleComputeScoreLine(taskItem) 
-
   return (
     <>
       <Wrapper
@@ -89,7 +75,7 @@ const TaskItem: React.FC<ITaskProps> = props => {
       >
         <TaskItemTitle data={taskItem} />
         <TaskItemInfo data={taskItem} />
-				<TaskScore data={taskItem} scoreLine={scoreLine} />
+				<Score taskItem={taskItem} />
         <Users>{users}</Users>
       </Wrapper>
       <>{modal && <TaskModal {...taskItem} onClose={toggleModal} />}</>

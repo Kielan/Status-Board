@@ -2,7 +2,10 @@ import React from 'react'
 import styled from 'styled-components'
 import TaskItem from './TaskItem.tsx'
 import { ITaskState } from './types.tsx'
-import TaskWrapperButton from './TaskWrapperButton.tsx'
+import Button, { 
+				ButtonBackground,
+				ButtonBorder,
+				ButtonModification } from './Button.tsx'
 import IconOval from './Icons/Oval.tsx'
 
 const variables = {
@@ -115,7 +118,12 @@ const TaskWrapper: React.FC<ITaskWrapperProps> = props => {
       <TasksWrapper dragOver={dragOver}>
         <Tasks {...props} />
       </TasksWrapper>
-      <TaskWrapperButton />
+      <Button
+				backgroundVariant={ButtonBackground.light}
+				borderVariant={ButtonBorder.topflat}
+				modification={ButtonModification.notext} 
+				disabled={true}
+			/>
     </Wrapper>
   )
 }

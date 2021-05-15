@@ -7,14 +7,15 @@ import {
 				subTaskComplete,
 				subTaskDelete,
 				taskDescriptionUpdate
-} from './store.ts' 
+} from './store.ts'
+import { colors }from './styles.ts'
 import { ISubTaskProps, ITaskState } from './types.ts'
-import Button from './Buttons/Big.tsx'
+import Button from './Button.tsx'
 import EditableTextarea from './EditableTextarea.tsx'
 import Close from './Icons/Close.tsx'
 import Shape from './Icons/Shape.tsx'
 import Tasks from './Icons/Tasks.tsx'
-import TaskScore from './TaskScore.tsx'
+import Score from './Score.tsx'
 
 const variables = {
   colorGray: '#92929d',
@@ -284,13 +285,6 @@ interface ITaskModalChecklistProps {
 
 const TaskModalChecklist:React.FC<ITaskModalChecklistProps> = props => {
   const { addTaskSubTask, subTaskComplete, subTaskDelete, subTaskList, taskId, taskItem } = props
-  var checklistContent;
-
-  if(subTaskList && subTaskList.length > 0) {
-    checklistContent = <TaskModalChecklistContent subTaskList={subTaskList} />
-  } else {
-    checklistContent = <></>
-  }
 
   return (
     <WrapRow>
@@ -305,7 +299,7 @@ const TaskModalChecklist:React.FC<ITaskModalChecklistProps> = props => {
           </SectionHeader>
           <SectionBody>
             <SectionText>
-              <TaskScore data={taskItem}/>
+              <Score taskItem={taskItem} />
             </SectionText>
           </SectionBody>
         </TaskModalChecklistColumn>
@@ -346,7 +340,7 @@ const TaskModalChecklistItem = styled.div`
   justify-content: space-between;
   height: 2rem;
   :hover {
-    background-color: #D5D5DC; 
+    background-color: ${colors.PrimaryColor}; 
   }
 `
 
