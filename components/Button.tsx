@@ -26,7 +26,6 @@ const Cross = styled.div`
     transform: rotate(180deg);
   }
 `
-//0 0 15px 15px
 const Wrapper = styled.button`
   height: 35px;
   border-radius: ${(props: IButtonProps) => (props.borderVariant == ButtonBorder.rounded ? '4px' :
@@ -72,7 +71,7 @@ export enum ButtonModification {
 	inverted,
 	notext
 }
-//modification outline inverted notext
+
 interface IButtonProps {
 	backgroundVariant?: ButtonBackground
 	borderVariant?: ButtonBorder
