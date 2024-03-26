@@ -71,11 +71,11 @@ const TaskItem: React.FC<ITaskProps> = props => {
         draggable={true}
         onDragStart={onDragStart}
         onClick={toggleModal}
-				drag={drag}
+	drag={drag}
       >
         <TaskItemTitle data={taskItem} />
         <TaskItemInfo data={taskItem} />
-				<Score taskItem={taskItem} />
+		<Score taskItem={taskItem} />
         <Users>{users}</Users>
       </Wrapper>
       <>{modal && <TaskModal {...taskItem} onClose={toggleModal} />}</>
@@ -112,8 +112,8 @@ const TaskItemTitle: React.FC<ITitleProps> = props => {
   return (
     <Wrapper>
       <TaskItemTitleWrapper {...props}>
-				{data.title}
-			</TaskItemTitleWrapper>
+	{data.title}
+	</TaskItemTitleWrapper>
       <Team>{data.team}</Team>
     </Wrapper>
   )
