@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Payment Widget Demo</title>
+
+  <!-- ESM import map: no npm/build step required -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.3.1",
+      "react-dom/client": "https://esm.sh/react-dom@18.3.1/client"
+    }
+  }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html, body, #root {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, input, textarea, select { font: inherit; }
+
+    .payment-builder {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: background .25s ease, color .25s ease;
+    }
+
+    .payment-builder.light {
+      --page-bg: #f4f4f4;
+      --panel-bg: #fff;
+      --input-bg: #fff;
+      --text: #202020;
+      --muted: #69658b;
+      --border: #dddddf;
+      --soft: #f7f7f8;
+      --shadow: rgba(0,0,0,.16);
+      background: #ededed;
+      color: var(--text);
+    }
+
+    .payment-builder.dark {
+      --page-bg: #111214;
+      --panel-bg: #1b1c20;
+      --input-bg: #24262b;
+      --text: #f4f4f5;
+      --muted: #aaa8bf;
+      --border: #393b42;
+      --soft: #24262b;
+      --shadow: rgba(0,0,0,.45);
+      background: #101114;
+      color: var(--text);
+    }
+
+    .builder-modal {
+      width: min(1000px, 100%);
+      min-height: 700px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 420px;
+      background: var(--panel-bg);
+      border-radius: 7px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.2);
+      overflow: hidden;
+    }
+
+    .builder-controls {
+      padding: 40px 36px;
+      min-width: 0;
+    }
+
+    .builder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+
+    .builder-header h1 {
+      margin: 0;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -.6px;
+    }
+
+    .builder-header p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--soft);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 19px;
+    }
+
+    .field {
+      position: relative;
+      display: block;
+      margin-bottom: 18px;
+    }
+
+    .field span,
+    .small-field span,
+    .control-label {
+      position: absolute;
+      left: 15px;
+      top: 7px;
+      color: #aaa8bf;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .field input {
+      width: 100%;
+      height: 56px;
+      padding: 22px 15px 7px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      outline: none;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .field input:focus,
+    .small-field input:focus,
+    .small-field select:focus,
+    .payment-input:focus,
+    .payment-message:focus {
+      border-color: #ff7133;
+      box-shadow: 0 0 0 3px rgba(255,113,51,.12);
+    }
+
+    .control-group {
+      position: relative;
+      height: 90px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 38px 16px 12px;
+    }
+
+    .color-picker {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .color-option {
+      width: 31px;
+      height: 31px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 38px;
+    }
+
+    .small-field {
+      position: relative;
+    }
+
+    .small-field input,
+    .small-field select {
+      width: 100%;
+      height: 55px;
+      padding: 22px 12px 6px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .copy-code-button {
+      width: 100%;
+      height: 52px;
+      border: 0;
+      border-radius: 3px;
+      color: white;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .code-help {
+      margin: 15px 8px 0;
+      color: #aaa9bd;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .code-help code { color: #ff718f; }
+
+    .preview-area {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 28px 90px;
+      background: var(--page-bg);
+    }
+
+    .payment-card {
+      position: relative;
+      width: 320px;
+      overflow: hidden;
+      background: var(--panel-bg);
+      border-radius: 10px;
+      box-shadow: 0 10px 20px var(--shadow);
+    }
+
+    .accent-bar {
+      height: 8px;
+      background: var(--accent);
+    }
+
+    .payment-content { padding: 26px 20px 30px; }
+
+    .payment-content h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.15;
+      letter-spacing: -.7px;
+    }
+
+    .payment-content h2 span { color: #77738f; }
+
+    .payment-description {
+      margin: 8px 0 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .amount-box {
+      min-height: 96px;
+      display: flex;
+      align-items: center;
+      padding: 12px 10px;
+      border: 1px solid #ffd4c5;
+      background: var(--input-bg);
+      gap: 5px;
+    }
+
+    .coffee-icon {
+      position: relative;
+      width: 36px;
+      height: 43px;
+      flex: 0 0 36px;
+    }
+
+    .coffee-lid {
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 25px;
+      height: 5px;
+      border: 2px solid #222;
+      background: #fff;
+    }
+
+    .coffee-cup {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 23px;
+      height: 22px;
+      border: 2px solid #222;
+      background: #fff;
+      text-align: center;
+      font-weight: 800;
+      font-size: 10px;
+      line-height: 11px;
+    }
+
+    .coffee-band {
+      position: absolute;
+      top: 19px;
+      left: 7px;
+      width: 23px;
+      height: 6px;
+      background: #ffcf28;
+      border-top: 1px solid #222;
+      border-bottom: 1px solid #222;
+    }
+
+    .coffee-bottom {
+      position: absolute;
+      left: 10px;
+      top: 29px;
+      width: 17px;
+      height: 10px;
+      background: #ffcf28;
+      border: 2px solid #222;
+    }
+
+    .quantity-button {
+      width: 20px;
+      height: 30px;
+      border: 0;
+      background: transparent;
+      color: #aaa;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .quantity {
+      width: 35px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      font-size: 14px;
+    }
+
+    .multiply { color: #aaa; margin: 0 2px; }
+
+    .amount-options {
+      display: flex;
+      gap: 7px;
+      margin-left: auto;
+    }
+
+    .amount {
+      width: 39px;
+      height: 39px;
+      border: 1px solid #ffd2c2;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .amount.selected {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .payment-input {
+      width: 100%;
+      height: 47px;
+      margin-top: 20px;
+      padding: 0 13px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .message-wrapper {
+      position: relative;
+      margin-top: 16px;
+    }
+
+    .payment-message {
+      width: 100%;
+      height: 91px;
+      resize: none;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .emoji {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      color: #aaa;
+      font-size: 21px;
+    }
+
+    .support-button {
+      width: 100%;
+      height: 48px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 3px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .support-button:hover,
+    .copy-code-button:hover {
+      filter: brightness(1.05);
+    }
+
+    .secure-footer {
+      min-height: 43px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text);
+    }
+
+    .secure-footer .coffee-icon {
+      transform: scale(.55);
+      width: 23px;
+      margin-right: -8px;
+    }
+
+    .floating-close {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 54px;
+      height: 54px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,.18);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      background: #222;
+      color: #fff;
+      padding: 11px 17px;
+      border-radius: 7px;
+      font-size: 13px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      z-index: 100;
+    }
+
+    @media (max-width: 850px) {
+      .builder-modal {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-area {
+        min-height: 650px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .payment-builder { padding: 0; }
+
+      .builder-modal { border-radius: 0; }
+
+      .builder-controls { padding: 28px 20px; }
+
+      .settings-row {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-area {
+        padding: 40px 15px 90px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="module">
+    import React, { useMemo, useState } from "react";
+    import { createRoot } from "react-dom/client";
+
+    const COLORS = [
+      "#ff7133",
+      "#4f78ff",
+      "#bd4cff",
+      "#ff4357",
+      "#48d3af",
+      "#ed4fff"
+    ];
+
+    const AMOUNTS = [1, 3, 5];
+
+    function CoffeeIcon() {
+      return React.createElement(
+        "div",
+        { className: "coffee-icon", "aria-hidden": true },
+        React.createElement("div", { className: "coffee-lid" }),
+        React.createElement(
+          "div",
+          { className: "coffee-cup" },
+          React.createElement("span", null, "$"),
+          React.createElement("small", null, "3")
+        ),
+        React.createElement("div", { className: "coffee-band" }),
+        React.createElement("div", { className: "coffee-bottom" })
+      );
+    }
+
+    function PaymentWidget() {
+      const [darkMode, setDarkMode] = useState(false);
+      const [description, setDescription] = useState(
+        "Support me on Buy me a coffee!"
+      );
+      const [message, setMessage] = useState(
+        "Thank you for visiting. You can now buy me a coffee!"
+      );
+      const [accent, setAccent] = useState("#ff7133");
+      const [position, setPosition] = useState("Right");
+      const [sideSpacing, setSideSpacing] = useState(18);
+      const [bottomSpacing, setBottomSpacing] = useState(18);
+      const [amount, setAmount] = useState(3);
+      const [quantity, setQuantity] = useState(1);
+      const [name, setName] = useState("");
+      const [supportMessage, setSupportMessage] = useState("");
+      const [toast, setToast] = useState("");
+
+      const total = amount * quantity;
+
+      const generatedCode = useMemo(() => {
+        return `<script>
+window.supportWidget = ${JSON.stringify({
+          description,
+          message,
+          accent,
+          position: position.toLowerCase(),
+          sideSpacing,
+          bottomSpacing
+        }, null, 2)};
+</script>
+<script src="https://example.com/support-widget.js"></script>`;
+      }, [
+        description,
+        message,
+        accent,
+        position,
+        sideSpacing,
+        bottomSpacing
+      ]);
+
+      function showToast(text) {
+        setToast(text);
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => setToast(""), 1800);
+      }
+
+      async function copyWidgetCode() {
+        try {
+          await navigator.clipboard.writeText(generatedCode);
+          showToast("Widget code copied to clipboard.");
+        } catch {
+          window.prompt("Copy widget code:", generatedCode);
+        }
+      }
+
+      function submitPayment() {
+        console.log("Payment request:", {
+          name,
+          message: supportMessage,
+          amount,
+          quantity,
+          total,
+          currency: "USD"
+        });
+
+        showToast(
+          `Demo payment submitted: $${total.toFixed(2)}`
+        );
+      }
+
+      return React.createElement(
+        "div",
+        {
+          className: `payment-builder ${darkMode ? "dark" : "light"}`,
+          style: { "--accent": accent }
+        },
+
+        React.createElement(
+          "div",
+          { className: "builder-modal" },
+
+          React.createElement(
+            "section",
+            { className: "builder-controls" },
+
+            React.createElement(
+              "header",
+              { className: "builder-header" },
+
+              React.createElement(
+                "div",
+                null,
+                React.createElement("h1", null, "Create your widget"),
+                React.createElement(
+                  "p",
+                  null,
+                  "Allow your fans to support directly from your website"
+                )
+              ),
+
+              React.createElement(
+                "button",
+                {
+                  className: "theme-toggle",
+                  onClick: () => setDarkMode(v => !v),
+                  title: "Toggle light/dark theme",
+                  "aria-label": "Toggle light/dark theme"
+                },
+                darkMode ? "☀" : "☾"
+              )
+            ),
+
+            React.createElement(
+              "label",
+              { className: "field" },
+              React.createElement("span", null, "Description"),
+              React.createElement("input", {
+                value: description,
+                onChange: e => setDescription(e.target.value)
+              })
+            ),
+
+            React.createElement(
+              "label",
+              { className: "field" },
+              React.createElement("span", null, "Widget message"),
+              React.createElement("input", {
+                value: message,
+                onChange: e => setMessage(e.target.value)
+              })
+            ),
+
+            React.createElement(
+              "div",
+              { className: "control-group" },
+              React.createElement(
+                "span",
+                { className: "control-label" },
+                "Background Color"
+              ),
+              React.createElement(
+                "div",
+                { className: "color-picker" },
+                COLORS.map(color =>
+                  React.createElement(
+                    "button",
+                    {
+                      key: color,
+                      className:
+                        "color-option" +
+                        (accent === color ? " selected" : ""),
+                      style: { backgroundColor: color },
+                      onClick: () => setAccent(color),
+                      "aria-label": `Select ${color}`
+                    },
+                    accent === color ? "✓" : ""
+                  )
+                )
+              )
+            ),
+
+            React.createElement(
+              "div",
+              { className: "settings-row" },
+
+              React.createElement(
+                "label",
+                { className: "small-field" },
+                React.createElement("span", null, "Position"),
+                React.createElement(
+                  "select",
+                  {
+                    value: position,
+                    onChange: e => setPosition(e.target.value)
+                  },
+                  React.createElement("option", null, "Right"),
+                  React.createElement("option", null, "Left")
+                )
+              ),
+
+              React.createElement(
+                "label",
+                { className: "small-field" },
+                React.createElement("span", null, "Side spacing"),
+                React.createElement("input", {
+                  type: "number",
+                  min: 0,
+                  value: sideSpacing,
+                  onChange: e =>
+                    setSideSpacing(Number(e.target.value) || 0)
+                })
+              ),
+
+              React.createElement(
+                "label",
+                { className: "small-field" },
+                React.createElement("span", null, "Bottom spacing"),
+                React.createElement("input", {
+                  type: "number",
+                  min: 0,
+                  value: bottomSpacing,
+                  onChange: e =>
+                    setBottomSpacing(Number(e.target.value) || 0)
+                })
+              )
+            ),
+
+            React.createElement(
+              "button",
+              {
+                className: "copy-code-button",
+                style: { background: accent },
+                onClick: copyWidgetCode
+              },
+              "Copy Widget Code"
+            ),
+
+            React.createElement(
+              "p",
+              { className: "code-help" },
+              "Copy and paste the code between the ",
+              React.createElement("code", null, "<head>"),
+              " and ",
+              React.createElement("code", null, "</head>"),
+              " section of your website."
+            )
+          ),
+
+          React.createElement(
+            "section",
+            { className: "preview-area" },
+
+            React.createElement(
+              "div",
+              {
+                className: "payment-card",
+                style: { "--accent": accent }
+              },
+
+              React.createElement("div", {
+                className: "accent-bar"
+              }),
+
+              React.createElement(
+                "div",
+                { className: "payment-content" },
+
+                React.createElement(
+                  "h2",
+                  null,
+                  "Buy ",
+                  React.createElement("span", null, "eshlox"),
+                  " a coffee"
+                ),
+
+                React.createElement(
+                  "p",
+                  { className: "payment-description" },
+                  message
+                ),
+
+                React.createElement(
+                  "div",
+                  { className: "amount-box" },
+
+                  React.createElement(CoffeeIcon),
+
+                  React.createElement(
+                    "button",
+                    {
+                      className: "quantity-button",
+                      onClick: () =>
+                        setQuantity(q => Math.max(1, q - 1)),
+                      "aria-label": "Decrease quantity"
+                    },
+                    "−"
+                  ),
+
+                  React.createElement(
+                    "div",
+                    { className: "quantity" },
+                    quantity
+                  ),
+
+                  React.createElement(
+                    "button",
+                    {
+                      className: "quantity-button",
+                      onClick: () =>
+                        setQuantity(q => Math.min(99, q + 1)),
+                      "aria-label": "Increase quantity"
+                    },
+                    "+"
+                  ),
+
+                  React.createElement(
+                    "div",
+                    { className: "multiply" },
+                    "×"
+                  ),
+
+                  React.createElement(
+                    "div",
+                    { className: "amount-options" },
+                    AMOUNTS.map(value =>
+                      React.createElement(
+                        "button",
+                        {
+                          key: value,
+                          className:
+                            "amount" +
+                            (amount === value ? " selected" : ""),
+                          onClick: () => setAmount(value)
+                        },
+                        value
+                      )
+                    )
+                  )
+                ),
+
+                React.createElement("input", {
+                  className: "payment-input",
+                  placeholder: "Name or @yourtwitter",
+                  value: name,
+                  onChange: e => setName(e.target.value)
+                }),
+
+                React.createElement(
+                  "div",
+                  { className: "message-wrapper" },
+                  React.createElement("textarea", {
+                    className: "payment-message",
+                    placeholder: "Message (optional)",
+                    value: supportMessage,
+                    onChange: e =>
+                      setSupportMessage(e.target.value)
+                  }),
+                  React.createElement(
+                    "span",
+                    { className: "emoji" },
+                    "☺"
+                  )
+                ),
+
+                React.createElement(
+                  "button",
+                  {
+                    className: "support-button",
+                    style: { background: accent },
+                    onClick: submitPayment
+                  },
+                  React.createElement("span", null, "Support"),
+                  React.createElement(
+                    "strong",
+                    null,
+                    `$${total.toFixed(2)}`
+                  )
+                )
+              ),
+
+              React.createElement(
+                "footer",
+                { className: "secure-footer" },
+                React.createElement(CoffeeIcon),
+                React.createElement(
+                  "span",
+                  null,
+                  "Secured by Buy Me A Coffee"
+                )
+              )
+            ),
+
+            React.createElement(
+              "button",
+              {
+                className: "floating-close",
+                onClick: () => showToast("Close button clicked.")
+              },
+              "×"
+            )
+          )
+        ),
+
+        toast
+          ? React.createElement(
+              "div",
+              { className: "toast" },
+              toast
+            )
+          : null
+      );
+    }
+
+    createRoot(document.getElementById("root"))
+      .render(React.createElement(PaymentWidget));
+  </script>
+</body>
+</html>
