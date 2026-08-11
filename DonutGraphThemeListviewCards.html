@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<title>Portfolio iOS React Demo</title>
+<script type="importmap">
+{"imports":{"react":"https://esm.sh/react@18.3.1","react-dom/client":"https://esm.sh/react-dom@18.3.1/client"}}
+</script>
+<style>
+*{box-sizing:border-box}html,body,#root{margin:0;min-height:100%;width:100%}
+body{background:#05070d;color:#f5f7fb;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+button,input{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:radial-gradient(circle at 50% -15%,#16233a 0,transparent 42%),#05070d}
+.phone{width:min(520px,100%);margin:auto}.topbar{height:58px;display:flex;align-items:center;justify-content:space-between}
+.icon{width:42px;height:42px;border-radius:50%;border:1px solid #1b2433;background:#0b101a;color:#bdc7d8;display:grid;place-items:center}
+.menu{display:grid;gap:4px;padding:12px}.menu i{display:block;width:20px;height:2px;background:#aab4c6;border-radius:2px}
+.search svg{width:19px;height:19px}.more{border:0;background:transparent;color:#9ca8ba;font-size:26px}
+.title{padding:15px 4px 20px}.title h1{margin:0;font-size:32px;letter-spacing:-1.4px}.title p{margin:7px 0 0;color:#8490a6;font-size:14px}
+.filters{display:flex;gap:8px;overflow:auto;padding-bottom:14px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}
+.filter{flex:0 0 auto;padding:8px 14px;border-radius:999px;color:#8591a7;background:#0b111c;border:1px solid #1a2434;font-size:12px}
+.filter.active{background:#172131;color:#fff;border-color:#344156}.list{display:grid;gap:11px}
+.card{--accent:#f026a8;position:relative;display:grid;grid-template-columns:78px minmax(0,1fr) auto;align-items:center;gap:14px;min-height:137px;padding:17px 14px;border-radius:18px;border:1px solid #172131;background:linear-gradient(145deg,#0d1522,#080d16);box-shadow:0 12px 30px #0005;overflow:hidden;transition:.16s}
+.card:hover{transform:translateY(-2px);border-color:#2b394d}.card:after{content:"";position:absolute;left:12%;right:12%;bottom:0;height:1px;background:var(--accent);opacity:.35}
+.donut{--p:70%;width:74px;height:74px;border-radius:50%;position:relative;background:conic-gradient(var(--accent) 0 var(--p),#1a2638 var(--p) 100%)}
+.donut:after{content:"";position:absolute;inset:9px;border-radius:50%;background:#080e18;border:1px solid #152033}
+.donut span{position:absolute;inset:0;display:grid;place-items:center;z-index:1;font-size:15px;font-weight:750}
+.info{min-width:0}.name-row{display:flex;align-items:center;gap:8px}.coin{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#06101a;font-weight:900;font-size:12px;flex:none}
+.name{font-size:16px;font-weight:720;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ticker{color:#7d8ba2;font-size:11px;margin-top:3px;font-weight:650}
+.holding{margin-top:10px;font-size:12px;color:#dbe2ee}.holding small{color:#77849a;font-size:11px}.sub{margin-top:3px;color:#718097;font-size:11px}
+.value{text-align:right;white-space:nowrap}.price{font-size:15px;font-weight:720}.change{font-size:11px;font-weight:700;margin-top:7px}.up{color:#2cff88}.down{color:#ff4668}.chev{color:#68758b;font-size:25px;margin-left:3px}
+.searchbox{width:100%;margin:5px 0 13px;padding:12px 14px;border-radius:12px;border:1px solid #1c293b;background:#0b111c;color:white;outline:none}.empty{padding:35px;text-align:center;color:#68768d;border:1px dashed #1c2939;border-radius:16px}.note{text-align:center;color:#46536a;font-size:10px;padding:17px 0}
+@media(max-width:390px){.card{grid-template-columns:66px minmax(0,1fr) auto;gap:9px;padding:14px 10px}.donut{width:64px;height:64px}.name{font-size:14px}.price{font-size:13px}}
+</style>
+</head>
+<body><div id="root"></div>
+<script type="module">
+import React,{useMemo,useState} from "react";
+import {createRoot} from "react-dom/client";
+
+const ASSETS=[
+{name:"Ethereum",ticker:"ETH",icon:"Ξ",p:72,color:"#f026a8",hold:"0.03654921",sub:"$98.21",price:"$2,689.42",change:"+2.45%",up:true},
+{name:"Solana",ticker:"SOL",icon:"S",p:58,color:"#20d5c3",hold:"0.03915221",sub:"$63.19",price:"$161.73",change:"+3.21%",up:true},
+{name:"Bitcoin",ticker:"BTC",icon:"₿",p:41,color:"#ff9d19",hold:"0.02667755",sub:"$1,741.82",price:"$65,048.12",change:"-1.23%",up:false},
+{name:"Polygon",ticker:"MATIC",icon:"M",p:39,color:"#ffd447",hold:"0.02967155",sub:"$18.26",price:"$0.61",change:"+0.87%",up:true},
+{name:"Cardano",ticker:"ADA",icon:"A",p:34,color:"#20d5c3",hold:"0.02592711",sub:"$14.62",price:"$0.56",change:"+1.10%",up:true},
+{name:"Avalanche",ticker:"AVAX",icon:"A",p:28,color:"#f026a8",hold:"0.02377151",sub:"$10.81",price:"$22.45",change:"-0.63%",up:false}
+];
+
+function SearchIcon(){return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>}
+function Card({a}){return <article className="card" style={{"--accent":a.color}}>
+<div className="donut" style={{"--p":a.p+"%"}}><span>{a.p}%</span></div>
+<div className="info"><div className="name-row"><div className="coin">{a.icon}</div><div className="name">{a.name}</div></div>
+<div className="ticker">{a.ticker}</div><div className="holding">{a.hold} <small>{a.ticker}</small></div><div className="sub">{a.sub}</div></div>
+<div className="value"><div className="price">{a.price}</div><div className={"change "+(a.up?"up":"down")}>{a.change}</div><div className="chev">›</div></div>
+</article>}
+
+function App(){
+const [filter,setFilter]=useState("All"),[search,setSearch]=useState(false),[q,setQ]=useState("");
+const data=useMemo(()=>ASSETS.filter(a=>!q||a.name.toLowerCase().includes(q.toLowerCase())||a.ticker.toLowerCase().includes(q.toLowerCase())),[q]);
+return <main className="app"><div className="phone">
+<header className="topbar"><button className="icon menu" aria-label="Menu"><i/><i/><i/></button>
+<button className="icon search" onClick={()=>setSearch(!search)} aria-label="Search"><SearchIcon/></button><button className="more" aria-label="More">⋮</button></header>
+{search&&<input autoFocus className="searchbox" value={q} onChange={e=>setQ(e.target.value)} placeholder="Search assets..."/>}
+<section className="title"><h1>Portfolio Overview</h1><p>Track your assets in real time</p></section>
+<nav className="filters">{["All","Layer 1","Layer 2"].map(x=><button key={x} className={"filter "+(filter===x?"active":"")} onClick={()=>setFilter(x)}>{x}</button>)}</nav>
+<section className="list">{data.map(a=><Card key={a.ticker} a={a}/>)}{!data.length&&<div className="empty">No assets found.</div>}</section>
+<div className="note">Illustrative demo data • iOS-inspired dark interface</div>
+</div></main>}
+createRoot(document.getElementById("root")).render(<App/>);
+</script></body></html>
